@@ -18,26 +18,24 @@ def submit_movies():
     try:
         # Récupérer les données envoyées par le formulaire
         data = request.json
+        print(f"Received data: {data}")  # Log les données reçues
         name = data.get("name")
         age = data.get("age")
         favorite_movies = data.get("favoriteMovies", [])
         mood_movies = data.get("moodMovies", [])
 
-        # Créer un utilisateur avec les données
+        print(f"Name: {name}, Age: {age}, Favorite Movies: {favorite_movies}, Mood Movies: {mood_movies}")
+
+        # Appeler le système expert (simulez une réponse pour tester)
         user = User(name=name, age=age)
         user.set_favorite_movies(favorite_movies)
         user.set_mood_movies(mood_movies)
 
-        # Charger et convertir les données en Lisp
-        lisp_data = get_data_as_lisp(CACHE_PATH, user)
+        lisp_data = get_data_as_lisp(CACHE_PATH, user)  # Conversion en Lisp
+        json_response = call_expert_system(lisp_data)  # Appel au système expert
+        print(f"Expert system response: {json_response}")
 
-        # Appeler le système expert
-        json_response = call_expert_system(lisp_data)
-        print("Received JSON response:", json_response)
-
-        # Retourner la réponse JSON
-        return json_response
-
+        return json_response  # Retourner la réponse du système expert
     except json.JSONDecodeError as json_error:
         print("JSON parsing failed:", json_error)
         return jsonify({"error": "JSON parsing failed", "details": str(json_error)}), 500
@@ -67,12 +65,3 @@ def search_movie():
         return jsonify(limited_results)
     except requests.RequestException as e:
         return jsonify({"error": str(e)}), 500
-
-@api_bp.route('/test-env', methods=['GET'])
-def test_env():
-    return {
-        "API_KEY": os.getenv("API_KEY"),
-        "RAILWAY_ENVIRONMENT": os.getenv("RAILWAY_ENVIRONMENT"),
-        "ALL_ENV": {key: os.getenv(key) for key in os.environ.keys()}
-    }
-
