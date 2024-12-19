@@ -1,3 +1,4 @@
 /backend/config/.env
 /venv
 /backend/data/movies_cache.json
+.idea/
