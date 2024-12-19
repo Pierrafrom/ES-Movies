@@ -4,7 +4,6 @@ from backend.config.constants import ENV_PATH
 
 # Charger les variables d'environnement à partir du fichier .env
 # load_dotenv(dotenv_path=ENV_PATH)
-load_dotenv()
 
 # ----------------------------------------------------------------------------------------------------------------------
 # Prod
