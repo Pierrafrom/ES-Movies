@@ -44,6 +44,7 @@ def submit_movies():
         print("An unexpected error occurred:", e)
         return jsonify({"error": "An unexpected error occurred", "details": str(e)}), 500
 
+
 @api_bp.route('/search-movie', methods=['GET'])
 def search_movie():
     query = request.args.get('query')

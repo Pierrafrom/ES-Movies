@@ -20,5 +20,10 @@ app.register_blueprint(api_bp, url_prefix='/api')
 def home():
     return render_template('index.html')
 
+@app.route('/health')
+def health_check():
+    return {"status": "ok"}, 200
+
+
 if __name__ == '__main__':
     app.run(debug=True)
