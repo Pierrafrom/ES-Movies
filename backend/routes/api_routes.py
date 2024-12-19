@@ -1,4 +1,6 @@
 import json
+import os
+
 import requests
 from flask import Blueprint, request, jsonify
 from backend.config.constants import CACHE_PATH
@@ -65,3 +67,12 @@ def search_movie():
         return jsonify(limited_results)
     except requests.RequestException as e:
         return jsonify({"error": str(e)}), 500
+
+@api_bp.route('/test-env', methods=['GET'])
+def test_env():
+    return {
+        "API_KEY": os.getenv("API_KEY"),
+        "RAILWAY_ENVIRONMENT": os.getenv("RAILWAY_ENVIRONMENT"),
+        "ALL_ENV": {key: os.getenv(key) for key in os.environ.keys()}
+    }
+

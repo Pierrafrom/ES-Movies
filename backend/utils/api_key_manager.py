@@ -10,10 +10,14 @@ from backend.config.constants import ENV_PATH
 # ----------------------------------------------------------------------------------------------------------------------
 
 def get_api_key():
+    # Debug : Affiche toutes les variables d'environnement
+    print(f"Environment Variables: {os.environ}")
+
+    # Récupérer la clé API
     api_key = os.getenv("API_KEY")
-    print(f"Retrieved API_KEY: {api_key}")  # Debug log
     if not api_key:
-        raise Exception("API Key not found. Please set it in the .env file.")
+        raise Exception("API Key not found. Please set it in the environment.")
+    print(f"Retrieved API_KEY: {api_key[:4]}...")  # Affiche les 4 premiers caractères pour vérifier
     return api_key
 
 # ----------------------------------------------------------------------------------------------------------------------
