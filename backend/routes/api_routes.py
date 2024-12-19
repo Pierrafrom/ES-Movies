@@ -18,6 +18,8 @@ def submit_movies():
     try:
         # Récupérer les données envoyées par le formulaire
         data = request.json
+        return request.json
+
         print(f"Received data: {data}")  # Log les données reçues
         name = data.get("name")
         age = data.get("age")
