@@ -83,6 +83,10 @@ def call_expert_system(lisp_data: str, lisp_script_path: str = EXPERT_SYSTEM_LIS
         raise FileNotFoundError(f"Lisp script '{lisp_script_path}' not found.")
 
     try:
+        print(f"[DEBUG] Sending Lisp data (first 100 chars): {lisp_data[:100]}")  # Affiche les 100 premiers caractères
+        print(f"[DEBUG] Using Lisp script path: {lisp_script_path}")
+        print(f"[DEBUG] Executing SBCL with: {SBCL_EXECUTABLE}")
+
         # Execute the Lisp script as a subprocess
         process = subprocess.Popen(
             [SBCL_EXECUTABLE, "--script", lisp_script_path],
@@ -95,6 +99,10 @@ def call_expert_system(lisp_data: str, lisp_script_path: str = EXPERT_SYSTEM_LIS
         # Send Lisp data via stdin
         stdout, stderr = process.communicate(input=lisp_data)
 
+        # Log stdout and stderr
+        print(f"[DEBUG] Lisp script stdout (first 300 chars): {stdout[:300]}")  # Affiche les 300 premiers caractères
+        print(f"[DEBUG] Lisp script stderr: {stderr.strip()}")
+
         # Check for subprocess errors
         if process.returncode != 0:
             raise subprocess.SubprocessError(f"Error in Lisp script: {stderr.strip()}")
@@ -102,18 +110,24 @@ def call_expert_system(lisp_data: str, lisp_script_path: str = EXPERT_SYSTEM_LIS
         # Parse the JSON response
         try:
             json_response = json.loads(stdout)
+            print(f"[DEBUG] Parsed JSON response: {json_response}")
         except json.JSONDecodeError as e:
+            print(f"[ERROR] Failed to parse JSON: {e.msg}")
             raise json.JSONDecodeError(f"Failed to parse JSON: {e.msg}", e.doc, e.pos)
 
         return json_response
 
     except FileNotFoundError:
+        print("[ERROR] SBCL not found. Please install SBCL and ensure it is in your PATH.")
         raise FileNotFoundError("SBCL not found. Please install SBCL and ensure it is in your PATH.")
     except subprocess.SubprocessError as e:
+        print(f"[ERROR] Subprocess error: {str(e)}")
         raise e
     except json.JSONDecodeError as e:
+        print(f"[ERROR] JSON decoding error: {str(e)}")
         raise e
     except Exception as e:
+        print(f"[ERROR] An unexpected error occurred: {str(e)}")
         raise Exception(f"An unexpected error occurred: {str(e)}")
 
 
