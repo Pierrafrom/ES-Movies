@@ -3,12 +3,13 @@ import os
 from backend.config.constants import ENV_PATH
 
 # Charger les variables d'environnement à partir du fichier .env
-# load_dotenv(dotenv_path=ENV_PATH)
+load_dotenv(dotenv_path=ENV_PATH)
 
 # ----------------------------------------------------------------------------------------------------------------------
 # Prod
 # ----------------------------------------------------------------------------------------------------------------------
 
+'''
 def get_api_key():
     # Récupérer la clé API
     api_key = os.getenv("API_KEY")
@@ -16,12 +17,12 @@ def get_api_key():
         raise Exception("API Key not found. Please set it in the environment.")
     print(f"Retrieved API_KEY: {api_key[:4]}...")  # Affiche les 4 premiers caractères pour vérifier
     return api_key
+'''
 
 # ----------------------------------------------------------------------------------------------------------------------
 # Dev
 # ----------------------------------------------------------------------------------------------------------------------
 
-'''
 def get_api_key() -> str:
     """
     Reads the TMDb API key from the .env file.
@@ -33,4 +34,3 @@ def get_api_key() -> str:
     if not api_key:
         raise Exception("API Key not found. Please set it in the .env file.")
     return api_key
-'''

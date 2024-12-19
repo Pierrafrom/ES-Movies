@@ -116,6 +116,10 @@
         (parse-integer (subseq release-date 0 4)) ; Extract the first 4 characters (year)
         nil))) ; Return nil if release date is not available or too short
 
+(defun get-movie-id (movie)
+  "Gets the ID of a movie."
+  (cdr (assoc :id movie)))
+
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; Scoring functions
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -184,20 +188,34 @@
 ;;; recommendation functions
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
+  
 (defun recommend-movies (db user &optional (n 5))
-  "Recommends the top N movies by a calculated score from the database that are not in the user's 
-  favorites or mood-movies. Filters adult movies if the user is under 18."
+  "Recommends the top N movies by a calculated score from the top 50 of the database 
+  that are not in the user's favorites or mood-movies. Filters adult movies if the user is under 18.
+  Ensures no duplicate IDs in the final list."
   (let* ((user-fav-titles (get-user-fav-movie-titles user))
          (user-mood-titles (get-user-mood-movies-titles user))
+         ;; Filtrage initial des films non admissibles
          (filtered-db (remove-if (lambda (movie)
                                    (or (and (< (get-user-age user) 18) (is-movie-adult movie))
                                        (member (movie-title movie) user-fav-titles :test #'string=)
                                        (member (movie-title movie) user-mood-titles :test #'string=)))
                                  db)))
-    ;; Sort by calculated score in descending order
+    ;; Tri des films par score décroissant
     (setf filtered-db (sort filtered-db #'> :key (lambda (movie) (score-movie movie user))))
-    ;; Take the top N movies
-    (subseq filtered-db 0 (min n (length filtered-db)))))
+    ;; Prendre les 50 premiers films triés
+    (let ((top-50 (subseq filtered-db 0 (min 50 (length filtered-db))))
+          (unique-ids '())
+          (unique-movies '()))
+      ;; Supprimer les duplicatas dans les 50 premiers
+      (dolist (movie top-50)
+        (let ((id (get-movie-id movie)))
+          (unless (member id unique-ids)
+            (push id unique-ids)
+            (push movie unique-movies))))
+      ;; Retourner les N premiers films sans duplicatas
+      (subseq (reverse unique-movies) 0 (min n (length unique-movies))))))
+
 
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
